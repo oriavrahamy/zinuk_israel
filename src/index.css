@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-purple-start: #B25EFF;
+  --color-brand-purple-end: #8007FF;
+  
+  --color-brand-green: #25FF10;
+  
+  --color-brand-orange-start: #FDEC6B;
+  --color-brand-orange-end: #FFB20F;
+  
+  --color-brand-pink-start: #FF008D;
+  --color-brand-pink-end: #FF00EF;
+  
+  --color-brand-black: #000000;
+  --color-brand-white: #FFFFFF;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-white text-brand-black font-sans antialiased;
+    direction: rtl;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-purple {
+    background-image: linear-gradient(to right, var(--color-brand-purple-start), var(--color-brand-purple-end));
+  }
+  .bg-gradient-orange {
+    background-image: linear-gradient(to right, var(--color-brand-orange-start), var(--color-brand-orange-end));
+  }
+  .bg-gradient-pink {
+    background-image: linear-gradient(to right, var(--color-brand-pink-start), var(--color-brand-pink-end));
+  }
+  .text-gradient-purple {
+    background-image: linear-gradient(to right, var(--color-brand-purple-start), var(--color-brand-purple-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-orange {
+    background-image: linear-gradient(to right, var(--color-brand-orange-start), var(--color-brand-orange-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-pink {
+    background-image: linear-gradient(to right, var(--color-brand-pink-start), var(--color-brand-pink-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  @keyframes wave {
+    0% { transform: rotate(0deg); }
+    10% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    30% { transform: rotate(14deg); }
+    40% { transform: rotate(-4deg); }
+    50% { transform: rotate(10deg); }
+    60% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+  }
+  .animate-wave {
+    animation: wave 2.5s infinite;
+    transform-origin: 70% 70%;
+  }
+}
