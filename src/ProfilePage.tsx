@@ -1,7 +1,5 @@
-import React from 'react';
 import { User, Settings, ArrowRight, BookOpen, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cn } from './App';
 
 
 export default function ProfilePage() {

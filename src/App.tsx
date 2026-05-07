@@ -64,13 +64,20 @@ function EditableText({ initialText, className, tag: Tag = "span", onSave }: { i
   );
 }
 
-const CIRCLE_SUBJECTS = [
-  { name: "מתמטיקה", color: "bg-[#0084ff]" }, // Blue
-  { name: "היסטוריה", color: "bg-[#ffb320]" }, // Orange/Yellow
-  { name: "פיזיקה", color: "bg-[#ff3b30]" }, // Red
-  { name: "אנגלית", color: "bg-[#00c7b5]" }, // Teal
-  { name: "לשון", color: "bg-[#34c759]" }, // Green
-  { name: "אזרחות", color: "bg-[#af52de]" }, // Purple
+const SUBJECT_ICONS = [
+  { name: "מתמטיקה", path: "/subjects-icons/מתמטיקה.png" },
+  { name: "פיזיקה", path: "/subjects-icons/פיזיקה.png" },
+  { name: "אנגלית", path: "/subjects-icons/אנגלית.png" },
+  { name: "לשון", path: "/subjects-icons/לשון.png" },
+  { name: "מדמ\"ח", path: "/subjects-icons/מדמ\"ח.png" },
+  { name: "מדע", path: "/subjects-icons/מדע.png" },
+  { name: "תנ\"ך", path: "/subjects-icons/תנ\"ך.png" },
+  { name: "ביולוגיה", path: "/subjects-icons/ביולוגיה.png" },
+  { name: "כימייה", path: "/subjects-icons/כימייה.png" },
+  { name: "גאוגרפיה", path: "/subjects-icons/גאוגרפיה.png" },
+  { name: "תושב\"ע", path: "/subjects-icons/תושב\"ע.png" },
+  { name: "חינוך תעבורתי", path: "/subjects-icons/חינוך תעבורתי.png" },
+  { name: "כללי", path: "/subjects-icons/כללי.png" },
 ];
 
 interface Post {
@@ -88,6 +95,8 @@ const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || "";
 export default function App() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeSubjectFilter, setActiveSubjectFilter] = useState("הכל");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     fetchPosts();
@@ -132,7 +141,7 @@ export default function App() {
   const [newPostSubject, setNewPostSubject] = useState("מתמטיקה");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleCreatePost = (e: React.FormEvent) => {
+  const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
     
@@ -183,6 +192,17 @@ export default function App() {
     setIsModalOpen(false);
   };
 
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      // scrollBy negative value because direction is RTL (so scrolling left means going further right in logical LTR terms, but for RTL content, scrolling to the next items is often negative clientWidth)
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const filteredPosts = activeSubjectFilter === "הכל" 
+    ? posts 
+    : posts.filter(post => post.subject === activeSubjectFilter);
+
   return (
     <div className="min-h-screen bg-[#d9d9d9] font-sans selection:bg-brand-purple-start selection:text-white relative pb-20">
       
@@ -218,27 +238,55 @@ export default function App() {
           <EditableText initialText="מה תרצה ללמוד היום?" />
         </h2>
 
-        {/* Subjects Circles */}
-        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 mb-12 relative flex-row-reverse">
-          {/* flex-row-reverse in RTL means it will render LTR visually */}
-          {CIRCLE_SUBJECTS.map((subject, idx) => (
+        {/* Subjects Carousel */}
+        <div className="relative w-full max-w-5xl mb-12 group">
+          <div 
+            ref={scrollContainerRef}
+            className="flex overflow-x-auto gap-6 pb-4 pt-2 px-2 scrollbar-hide snap-x"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
             <div 
-              key={idx} 
-              className={cn(
-                "w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center text-black font-semibold text-lg md:text-xl shadow-sm transition-transform hover:scale-105 cursor-pointer relative",
-                subject.color
-              )}
+              onClick={() => setActiveSubjectFilter("הכל")}
+              className="flex flex-col items-center gap-2 cursor-pointer transition-transform hover:scale-105 snap-start shrink-0"
             >
-              <EditableText initialText={subject.name} />
-              
-              {/* "עוד" (More) overlapping button on the Purple circle */}
-              {subject.color === "bg-[#af52de]" && (
-                <div className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 bg-[#a3a3a3] text-black px-2 py-1 text-sm font-medium cursor-pointer hover:bg-gray-500 transition-colors z-10 opacity-90 shadow-sm">
-                  <EditableText initialText="עוד" />
-                </div>
-              )}
+              <div className={cn(
+                "w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center bg-gray-200 border-4 transition-colors text-black font-bold",
+                activeSubjectFilter === "הכל" ? "border-brand-purple-start shadow-[0_0_15px_rgba(178,94,255,0.4)]" : "border-transparent shadow-sm"
+              )}>
+                הכל
+              </div>
             </div>
-          ))}
+
+            {SUBJECT_ICONS.map((subject, idx) => (
+              <div 
+                key={idx} 
+                onClick={() => setActiveSubjectFilter(subject.name)}
+                className="flex flex-col items-center gap-2 cursor-pointer transition-transform hover:scale-105 snap-start shrink-0"
+              >
+                <div className={cn(
+                  "w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center bg-white border-4 transition-colors overflow-hidden",
+                  activeSubjectFilter === subject.name ? "border-brand-purple-start shadow-[0_0_15px_rgba(178,94,255,0.4)]" : "border-transparent shadow-sm"
+                )}>
+                  <img 
+                    src={subject.path} 
+                    alt={subject.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="font-semibold text-black text-center text-sm md:text-base">
+                  <EditableText initialText={subject.name} />
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* "עוד" (More) overlapping button to scroll */}
+          <div 
+            onClick={scrollRight}
+            className="absolute left-0 top-1/3 -translate-y-1/2 -ml-4 md:-ml-8 bg-[#a3a3a3] text-black px-3 py-2 text-sm font-bold cursor-pointer hover:bg-gray-500 transition-colors z-10 opacity-90 shadow-md rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.2)] active:scale-95 flex items-center justify-center"
+          >
+            עוד
+          </div>
         </div>
 
         {/* Grid Layout (Posts and Notice Board) */}
@@ -274,7 +322,7 @@ export default function App() {
                 <div className="text-center text-black/60 mt-10 animate-pulse">טוען נתונים...</div>
               ) : (
                 <>
-                  {posts.map(post => (
+                  {filteredPosts.map(post => (
                     <div key={post.id} className="bg-white/90 p-4 rounded-xl shadow-sm text-black group relative">
                       <div className="flex items-center justify-between mb-2 border-b border-gray-200 pb-2">
                         <div className="flex items-center gap-2">
@@ -334,7 +382,7 @@ export default function App() {
                   onChange={(e) => setNewPostSubject(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-purple-start focus:border-brand-purple-start outline-none"
                 >
-                  {CIRCLE_SUBJECTS.map(s => (
+                  {SUBJECT_ICONS.map(s => (
                     <option key={s.name} value={s.name}>{s.name}</option>
                   ))}
                   <option value="כללי">כללי</option>
